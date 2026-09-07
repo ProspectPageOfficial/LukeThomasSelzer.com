@@ -42,6 +42,12 @@ const ALLOWED_FIELDS = new Set([
   // resume PDF. Kept in the personal blob (not a new endpoint) so we
   // don't multiply the number of round-trips needed to hydrate a page.
   "coach_name", "coach_phone", "coach_email",
+  // academic performance — surfaced on the Personal Bio tab next to
+  // Class Year / Currently Attending. `gpa` is a free-form string
+  // (e.g. "3.85 / 4.0", "4.2 weighted"); `test_scores` covers SAT/ACT
+  // in whatever format the owner prefers ("1420 SAT", "31 ACT",
+  // "1420 / 31"). Client decides display formatting.
+  "gpa", "test_scores",
   // socials — keep aligned with SOCIAL_PLATFORMS on the client
   "instagram", "twitter", "tiktok", "youtube", "facebook", "linkedin", "website",
 ]);

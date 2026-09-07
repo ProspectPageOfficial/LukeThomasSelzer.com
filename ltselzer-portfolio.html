@@ -1901,6 +1901,19 @@ body.is-owner .visitor-only { display: none !important; }
             <span>Currently Attending</span>
             <input type="text" name="currently_attending" placeholder="e.g. school, academy, program — whatever you want" />
           </label>
+          <!-- Academic performance. Free-form text so the owner can format
+               however they like — weighted vs. unweighted, cumulative vs.
+               current-year, superscore vs. single sitting. Both fields
+               sit as .field (not .field full) so they occupy the same
+               2-col row and stay visually symmetric on the display side. -->
+          <label class="field">
+            <span>GPA</span>
+            <input type="text" name="gpa" placeholder="e.g. 3.85 / 4.0 or 4.2 weighted" />
+          </label>
+          <label class="field">
+            <span>SAT / ACT</span>
+            <input type="text" name="test_scores" placeholder="e.g. 1420 SAT or 31 ACT" />
+          </label>
           <!-- Physical + contact details. Plain text inputs so the owner
                can format however they like ("6'3\"", "75 in", whatever).
                Saved through the same handleSubmit() as every other field —
@@ -3734,6 +3747,8 @@ const PORTFOLIO_DATA = {
       ["Weight",              data.personal.weight],
       ["Class Year",          data.personal.class_year],
       ["Currently Attending", data.personal.currently_attending],
+      ["GPA",                 data.personal.gpa],
+      ["SAT / ACT",           data.personal.test_scores],
     ];
     items.forEach(([label, value]) => {
       if (!value) return;
@@ -4142,6 +4157,8 @@ const PORTFOLIO_DATA = {
       "height", "weight", "home_address", "phone",
       // current coach — same blob, different UI surface (Golf Bio tab).
       "coach_name", "coach_phone", "coach_email",
+      // academic performance — surfaced on the Personal Bio tab.
+      "gpa", "test_scores",
       ...SOCIAL_PLATFORMS.map((p) => p.key),
     ];
     // Subset of FIELDS that the coach edit form on the Golf Bio tab owns.
