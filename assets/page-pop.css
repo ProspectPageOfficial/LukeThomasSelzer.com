@@ -1,0 +1,120 @@
+/* ======================================================================
+   page-pop.css — extend the hero's "Broadcast Leaderboard" bed to the
+   entire page, so the whole site pops instead of dying into an ivory
+   half below the hero.
+
+   Loaded AFTER hero-pop.css. Additive skin only — no colour is
+   hardcoded, everything derives from the same --green / --sand tokens
+   the Theme Editor already writes to. Change a token, change the whole
+   page. (DRY over the base sheet AND over hero-pop.css.)
+
+   Layers, top to bottom:
+     1. Body bed        — the page-wide popping gradient
+     2. Hero seam kill  — remove the fade-into-ivory pseudo
+     3. Content polish  — cards get a little extra shadow so they lift
+                          off the darker backdrop instead of drowning
+     4. Bottom rail     — symmetry with the hero's top brand rail
+   ====================================================================== */
+
+/* ---------- 1. Body bed ----------
+   Same recipe as .hero's stage in hero-pop.css, deliberately mirrored:
+   two radial "spotlights" over a diagonal deep-green linear. Applied
+   to BOTH <html> and <body> because the base sheet paints <html> ivory
+   — leaving it ivory would let the canvas bleed through on tall docs
+   and below any element that isn't the body itself. Same declaration
+   twice would be a DRY sin, so it's declared once and shared via the
+   comma selector.
+
+   No background-attachment: fixed. It sounds nice ("the stage stays
+   put while content scrolls") but on a long page the fixed layer only
+   paints at viewport height; everything below reveals whatever the
+   canvas colour is. That's exactly the ivory-band bug we're here to
+   fix. A regular scrolling background stretches to the full document
+   height and reads as one continuous bed. */
+html,
+body {
+  background:
+    radial-gradient(120% 60% at 82% 0%,
+      color-mix(in srgb, var(--green-soft) 45%, transparent) 0%, transparent 55%),
+    radial-gradient(80% 55% at 8% 12%,
+      color-mix(in srgb, var(--sand) 18%, transparent) 0%, transparent 55%),
+    radial-gradient(90% 55% at 50% 100%,
+      color-mix(in srgb, var(--green-soft) 30%, transparent) 0%, transparent 60%),
+    linear-gradient(172deg,
+      color-mix(in srgb, var(--green-deep) 92%, #000) 0%,
+      var(--green-deep) 28%,
+      var(--green) 62%,
+      color-mix(in srgb, var(--green-deep) 78%, #000) 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+body { color: var(--charcoal); min-height: 100vh; }
+
+/* ---------- 2. Hero seam kill ----------
+   The hero used to fade its bottom into --ivory to hide the transition
+   into the (formerly white) body. The body is now the same gradient
+   family, so that fade is not just unnecessary — it actively creates
+   a bright band right at the seam. Zero it out. */
+.hero::after { display: none; }
+
+/* Trim the hero's bottom padding a touch now that we're no longer
+   accommodating a 160px fade. Keeps the .container's -2.5rem pull-up
+   feeling intentional rather than yawning. */
+.hero { padding-bottom: 3.5rem; }
+
+/* ---------- 3. Content polish ----------
+   The tab strip and tab panels are white cards. On ivory they read as
+   "same-ish, slightly framed". On the new dark bed they already pop;
+   we just give them a beefier shadow so the lift looks deliberate and
+   not accidental. Border radius + specificity match the base sheet. */
+.tabs,
+.tab-panel {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35) inset,
+    0 18px 44px rgba(0, 0, 0, 0.28),
+    0 4px 12px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* Container gets a wider max-width sibling of a "stage floor" — a very
+   soft halo behind the cards to marry them to the bed. Pure decoration,
+   so it's a pseudo-element on .container (which is already position:
+   relative in the base sheet). */
+.container::before {
+  content: "";
+  position: absolute;
+  inset: -1.5rem -1.5rem auto -1.5rem;
+  height: 60%;
+  background: radial-gradient(60% 100% at 50% 0%,
+    rgba(0, 0, 0, 0.28) 0%, transparent 70%);
+  filter: blur(20px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ---------- 4. Bottom rail ----------
+   Mirror the animated tri-tone rail the hero has at the top of the
+   page. Attached to <body> so it lives under everything, fixed to the
+   viewport bottom so it's the last thing your eye lands on. Same
+   4px height + gradient recipe as .hero::before for visual rhyme. */
+body::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+    var(--sand) 0%,
+    var(--green-soft) 38%,
+    var(--sand) 62%,
+    var(--green-soft) 100%);
+  background-size: 200% 100%;
+  animation: hero-rail 9s linear infinite; /* reuse the hero's keyframes */
+  z-index: 5;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::after { animation: none; }
+}

@@ -1700,6 +1700,12 @@ body.is-owner .visitor-only { display: none !important; }
        Additive only — it reads the same --green / --sand custom
        properties the Theme Editor writes, so theming still works. -->
   <link rel="stylesheet" href="assets/hero-pop.css" />
+  <!-- Page-wide "pop" bed. Extends the hero's tokenized gradient
+       treatment to <body> so the whole site reads as one broadcast
+       stage instead of a green hero glued onto an ivory page.
+       MUST load after hero-pop.css: source order is what lets its
+       .hero::after override (seam-kill) win at equal specificity. -->
+  <link rel="stylesheet" href="assets/page-pop.css" />
   <!-- Motion + interaction for the hero. Observes the DOM rather than
        being called by renderHero(), so re-renders are handled for free. -->
   <script defer src="assets/hero-pop.js"></script>
