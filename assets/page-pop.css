@@ -16,51 +16,66 @@
      4. Bottom rail     — symmetry with the hero's top brand rail
    ====================================================================== */
 
-/* ---------- 1. Body bed ----------
-   Same recipe as .hero's stage in hero-pop.css, deliberately mirrored:
-   two radial "spotlights" over a diagonal deep-green linear. Applied
-   to BOTH <html> and <body> because the base sheet paints <html> ivory
-   — leaving it ivory would let the canvas bleed through on tall docs
-   and below any element that isn't the body itself. Same declaration
-   twice would be a DRY sin, so it's declared once and shared via the
-   comma selector.
+/* ---------- 1. One continuous stage ----------
+   The previous approach painted a gradient bed on <body> AND left the
+   hero painting its OWN gradient bed inside .hero. Two independent
+   beds meeting at the hero's bottom edge = a visible seam, no matter
+   how carefully you match the colours (different angles, different
+   stops, different radial spotlights — one of them always leaks a
+   band of the wrong shade at the boundary).
 
-   No background-attachment: fixed. It sounds nice ("the stage stays
-   put while content scrolls") but on a long page the fixed layer only
-   paints at viewport height; everything below reveals whatever the
-   canvas colour is. That's exactly the ivory-band bug we're here to
-   fix. A regular scrolling background stretches to the full document
-   height and reads as one continuous bed. */
-html,
-body {
+   The DRY fix: one shared stage on <html> spanning the whole document.
+   <body> is transparent. .hero drops its own base linear-gradient and
+   keeps only its decorative spotlights + brand rail, so it now paints
+   ON TOP of the shared stage instead of next to it. One source of
+   truth for the bed, one continuous surface from the top of the page
+   to the bottom, no seam.
+
+   The stage itself is tuned so its natural progression (dark → green
+   → dark) reads as a single cinematic frame: the hero sits in the
+   dark cinematic top, the tab panels sit in the green middle, and
+   the bottom rail closes on a dark cinematic bottom. */
+html {
   background:
-    radial-gradient(120% 60% at 82% 0%,
-      color-mix(in srgb, var(--green-soft) 45%, transparent) 0%, transparent 55%),
-    radial-gradient(80% 55% at 8% 12%,
-      color-mix(in srgb, var(--sand) 18%, transparent) 0%, transparent 55%),
-    radial-gradient(90% 55% at 50% 100%,
-      color-mix(in srgb, var(--green-soft) 30%, transparent) 0%, transparent 60%),
-    linear-gradient(172deg,
-      color-mix(in srgb, var(--green-deep) 92%, #000) 0%,
-      var(--green-deep) 28%,
-      var(--green) 62%,
+    radial-gradient(90% 50% at 50% 100%,
+      color-mix(in srgb, var(--green-soft) 28%, transparent) 0%, transparent 60%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--green-deep) 88%, #000) 0%,
+      var(--green-deep) 18%,
+      color-mix(in srgb, var(--green-deep) 80%, var(--green)) 42%,
+      var(--green) 72%,
       color-mix(in srgb, var(--green-deep) 78%, #000) 100%);
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  min-height: 100vh;
 }
-body { color: var(--charcoal); min-height: 100vh; }
+body {
+  background: transparent;
+  color: var(--charcoal);
+  min-height: 100vh;
+}
 
-/* ---------- 2. Hero seam kill ----------
-   The hero used to fade its bottom into --ivory to hide the transition
-   into the (formerly white) body. The body is now the same gradient
-   family, so that fade is not just unnecessary — it actively creates
-   a bright band right at the seam. Zero it out. */
+/* ---------- 2. Hero paints on the shared stage ----------
+   Strip .hero's own linear-gradient base (defined in hero-pop.css) so
+   the html stage shows through. Keep the two decorative spotlights
+   that give the hero its warm-highlight character — those still make
+   sense as an overlay on the shared bed.
+
+   Also kill:
+     - .hero::after (the old ivory-fade band — already dead, kept for
+       safety in case the base sheet changes)
+     - the trailing bottom padding that was reserving room for that
+       fade — the container's -2.5rem pull-up now feels intentional. */
+.hero {
+  background:
+    radial-gradient(120% 90% at 78% 8%,
+      color-mix(in srgb, var(--green-soft) 55%, transparent) 0%, transparent 55%),
+    radial-gradient(90% 70% at 12% 0%,
+      color-mix(in srgb, var(--sand) 22%, transparent) 0%, transparent 50%);
+  background-color: transparent;
+  padding-bottom: 3.5rem;
+}
 .hero::after { display: none; }
-
-/* Trim the hero's bottom padding a touch now that we're no longer
-   accommodating a 160px fade. Keeps the .container's -2.5rem pull-up
-   feeling intentional rather than yawning. */
-.hero { padding-bottom: 3.5rem; }
 
 /* ---------- 3. Content polish ----------
    The tab strip and tab panels are white cards. On ivory they read as
