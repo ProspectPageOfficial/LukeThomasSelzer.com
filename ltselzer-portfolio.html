@@ -5545,6 +5545,19 @@ const PORTFOLIO_DATA = {
         });
       }
 
+      // URL override — lets an embed (e.g. the recruiting dashboard's
+      // live thumbnail) skip the chooser and land straight in visitor
+      // mode, exactly as a coach clicking a public link would.
+      //
+      // Only the LOW-privilege role can be pre-selected this way: owner
+      // still has to earn the pill by typing the password. Anything else
+      // would reduce a real auth check to "add a query string".
+      const urlRole = new URLSearchParams(location.search).get("role");
+      if (urlRole === "visitor") {
+        switchToVisitor();
+        return;
+      }
+
       // Restore prior choice for this tab, or show the chooser gate.
       const saved = sessionStorage.getItem(SS_KEY);
       if (saved === "owner" || saved === "visitor") {
